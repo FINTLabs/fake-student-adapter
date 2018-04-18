@@ -1,0 +1,56 @@
+{
+  "bostedsadresse": {
+    "adresselinje": [
+      "Etnegaten 43"
+    ],
+    "postnummer": "5566",
+    "poststed": "Hervik"
+  },
+  "fodselsdato": "1953-05-16T00:00:00.000Z",
+  "fodselsnummer": {
+    "identifikatorverdi": "16055445678"
+  },
+  "kontaktinformasjon": {
+    "epostadresse": "gudrun53@hotmail.com",
+    "mobiltelefonnummer": "44444444",
+    "nettsted": "http://grudrun.blog.com"
+  },
+  "navn": {
+    "etternavn": "Haraldseid",
+    "fornavn": "Gudrun"
+  },
+  "postadresse": {
+    "adresselinje": [
+      "Etnegaten 43"
+    ],
+    "postnummer": "5566",
+    "poststed": "Hervik"
+  },
+  "_links": {
+    "personalressurs": [
+      {
+        "href": "${administrasjon.personal.personalressurs}/ansattnummer/12345"
+      }
+    ],
+    "kjonn": [
+      {
+        "href": "${felles.kodeverk.iso.kjonn}/systemid/2"
+      }
+    ],
+    "statsborgerskap": [
+      {
+        "href": "${felles.kodeverk.iso.landkode}/systemid/NO"
+      }
+    ],
+    "morsmal": [
+      {
+        "href": "${felles.kodeverk.iso.sprak}/systemid/no"
+      }
+    ],
+    "malform": [
+      {
+        "href": "${felles.kodeverk.iso.sprak}/systemid/nb"
+      }
+    ]
+  }
+}

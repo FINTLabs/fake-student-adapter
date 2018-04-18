@@ -1,0 +1,30 @@
+{
+  "elevnummer": {
+    "identifikatorverdi": "500001"
+  },
+  "brukernavn": {
+    "gyldighetsperiode": {
+      "start": "2010-06-04T00:00:00Z",
+      "slutt": "2099-12-31T00:00:00Z"
+    },
+    "identifikatorverdi": "Yougung"
+  },
+  "feidenavn": {
+    "identifikatorverdi": "leonahansen@sundetvgs.haugfk.no"
+  },
+  "systemId": {
+    "identifikatorverdi": "a0611475-f278-4e5f-ba1b-bdfe440b6f71"
+  },
+  "_links": {
+    "elevforhold": [
+      {
+        "href": "${utdanning.elev.elevforhold}/systemid/E_500001_1"
+      }
+    ],
+    "person": [
+      {
+        "href": "${felles.person}/fodselsnummer/14029923273"
+      }
+    ]
+  }
+}
