@@ -1,4 +1,4 @@
-# FINT Fake student Adapter (FFPA)
+# FINT Fake Student Adapter (FFSA)
 
 ## Adapter configuration
 | Key | Description | Example |

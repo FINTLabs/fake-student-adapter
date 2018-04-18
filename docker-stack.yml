@@ -1,0 +1,4 @@
+version: "3"
+services:
+  adapter:
+    image: dtr.rogfk.no/k48402217/fake-student-adapter
