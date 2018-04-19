@@ -17,11 +17,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -51,14 +51,20 @@ public class PersonRepository implements Handler {
         try {
             switch (FellesActions.valueOf(response.getAction())) {
                 case GET_ALL_PERSON:
-                    response.setData(repository.stream().collect(Collectors.toList()));
+                    response.setData(new ArrayList<>(repository));
                     break;
                 case UPDATE_PERSON:
                     List<PersonResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, PersonResource.class));
                     log.trace("Converted data: {}", data);
+                    if (data.stream().anyMatch(i -> i.getFodselsnummer()==null||i.getFodselsnummer().getIdentifikatorverdi()==null)) {
+                        response.setResponseStatus(ResponseStatus.REJECTED);
+                        response.setMessage("Creating new resources is not permitted.");
+                        break;
+                    }
                     data.forEach(r -> repository.removeIf(i -> i.getFodselsnummer().getIdentifikatorverdi().equals(r.getFodselsnummer().getIdentifikatorverdi())));
                     repository.addAll(data);
                     response.setResponseStatus(ResponseStatus.ACCEPTED);
+                    response.setData(new ArrayList<>(data));
                     break;
                 default:
                     response.setStatus(Status.ADAPTER_REJECTED);

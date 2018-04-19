@@ -10,6 +10,7 @@ import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.utdanning.elev.ElevActions;
 import no.fint.provider.student.service.Handler;
+import no.fint.provider.student.service.IdentifikatorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
@@ -17,11 +18,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Repository
@@ -29,6 +30,9 @@ public class ElevRepository implements Handler {
 
     @Autowired
     ObjectMapper objectMapper;
+
+    @Autowired
+    IdentifikatorFactory identifikatorFactory;
 
     private Collection<ElevResource> repository = new ConcurrentLinkedQueue<>();
 
@@ -51,14 +55,16 @@ public class ElevRepository implements Handler {
         try {
             switch (ElevActions.valueOf(response.getAction())) {
                 case GET_ALL_ELEV:
-                    response.setData(repository.stream().collect(Collectors.toList()));
+                    response.setData(new ArrayList<>(repository));
                     break;
                 case UPDATE_ELEV:
                     List<ElevResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, ElevResource.class));
                     log.trace("Converted data: {}", data);
+                    data.stream().filter(i-> i.getSystemId()==null||i.getSystemId().getIdentifikatorverdi()==null).forEach(i->i.setSystemId(identifikatorFactory.create()));
                     data.forEach(r -> repository.removeIf(i -> i.getSystemId().getIdentifikatorverdi().equals(r.getSystemId().getIdentifikatorverdi())));
                     repository.addAll(data);
                     response.setResponseStatus(ResponseStatus.ACCEPTED);
+                    response.setData(new ArrayList<>(data));
                     break;
                 default:
                     response.setStatus(Status.ADAPTER_REJECTED);
