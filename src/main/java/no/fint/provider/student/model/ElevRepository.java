@@ -60,8 +60,8 @@ public class ElevRepository implements Handler {
                 case UPDATE_ELEV:
                     List<ElevResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, ElevResource.class));
                     log.trace("Converted data: {}", data);
-                    data.stream().filter(i-> i.getSystemId()==null||i.getSystemId().getIdentifikatorverdi()==null).forEach(i->i.setSystemId(identifikatorFactory.create()));
-                    data.forEach(r -> repository.removeIf(i -> i.getSystemId().getIdentifikatorverdi().equals(r.getSystemId().getIdentifikatorverdi())));
+                    data.stream().filter(i-> i.getElevnummer()==null||i.getElevnummer().getIdentifikatorverdi()==null).forEach(i->i.setSystemId(identifikatorFactory.create()));
+                    data.forEach(r -> repository.removeIf(i -> i.getElevnummer().getIdentifikatorverdi().equals(r.getElevnummer().getIdentifikatorverdi())));
                     repository.addAll(data);
                     response.setResponseStatus(ResponseStatus.ACCEPTED);
                     response.setData(new ArrayList<>(data));
