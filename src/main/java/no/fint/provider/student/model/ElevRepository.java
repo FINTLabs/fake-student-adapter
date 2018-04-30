@@ -2,6 +2,7 @@ package no.fint.provider.student.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableSet;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import no.fint.event.model.Event;
 import no.fint.event.model.ResponseStatus;
@@ -9,6 +10,7 @@ import no.fint.event.model.Status;
 import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.utdanning.elev.ElevActions;
+import no.fint.provider.student.behaviour.Behaviour;
 import no.fint.provider.student.service.Handler;
 import no.fint.provider.student.service.IdentifikatorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +36,10 @@ public class ElevRepository implements Handler {
     @Autowired
     IdentifikatorFactory identifikatorFactory;
 
+    @Autowired
+    List<Behaviour<ElevResource>> behaviours;
+
+    @Getter
     private Collection<ElevResource> repository = new ConcurrentLinkedQueue<>();
 
     @PostConstruct
@@ -61,10 +67,14 @@ public class ElevRepository implements Handler {
                     List<ElevResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, ElevResource.class));
                     log.trace("Converted data: {}", data);
                     data.stream().filter(i-> i.getElevnummer()==null||i.getElevnummer().getIdentifikatorverdi()==null).forEach(i->i.setSystemId(identifikatorFactory.create()));
-                    data.forEach(r -> repository.removeIf(i -> i.getElevnummer().getIdentifikatorverdi().equals(r.getElevnummer().getIdentifikatorverdi())));
-                    repository.addAll(data);
                     response.setResponseStatus(ResponseStatus.ACCEPTED);
-                    response.setData(new ArrayList<>(data));
+                    response.setData(null);
+                    behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
+                    if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
+                        data.forEach(r -> repository.removeIf(i -> i.getElevnummer().getIdentifikatorverdi().equals(r.getElevnummer().getIdentifikatorverdi())));
+                        response.setData(new ArrayList<>(data));
+                        repository.addAll(data);
+                    }
                     break;
                 default:
                     response.setStatus(Status.ADAPTER_REJECTED);

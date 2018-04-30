@@ -9,6 +9,7 @@ import no.fint.event.model.Status;
 import no.fint.model.felles.FellesActions;
 import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.felles.PersonResource;
+import no.fint.provider.student.behaviour.Behaviour;
 import no.fint.provider.student.service.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -31,6 +32,9 @@ public class PersonRepository implements Handler {
     ObjectMapper objectMapper;
 
     private Collection<PersonResource> repository = new ConcurrentLinkedQueue<>();
+
+    @Autowired
+    private List<Behaviour<PersonResource>> behaviours;
 
     @PostConstruct
     public void init() throws IOException {
@@ -56,15 +60,14 @@ public class PersonRepository implements Handler {
                 case UPDATE_PERSON:
                     List<PersonResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, PersonResource.class));
                     log.trace("Converted data: {}", data);
-                    if (data.stream().anyMatch(i -> i.getFodselsnummer()==null||i.getFodselsnummer().getIdentifikatorverdi()==null)) {
-                        response.setResponseStatus(ResponseStatus.REJECTED);
-                        response.setMessage("Creating new resources is not permitted.");
-                        break;
-                    }
-                    data.forEach(r -> repository.removeIf(i -> i.getFodselsnummer().getIdentifikatorverdi().equals(r.getFodselsnummer().getIdentifikatorverdi())));
-                    repository.addAll(data);
                     response.setResponseStatus(ResponseStatus.ACCEPTED);
-                    response.setData(new ArrayList<>(data));
+                    response.setData(null);
+                    behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
+                    if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
+                        response.setData(new ArrayList<>(data));
+                        data.forEach(r -> repository.removeIf(i -> i.getFodselsnummer().getIdentifikatorverdi().equals(r.getFodselsnummer().getIdentifikatorverdi())));
+                        repository.addAll(data);
+                    }
                     break;
                 default:
                     response.setStatus(Status.ADAPTER_REJECTED);
