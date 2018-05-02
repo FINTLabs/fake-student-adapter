@@ -9,7 +9,6 @@ import no.fint.provider.student.model.ElevRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,7 +23,7 @@ public class ProhibitsUpdatesToFeideidForElev implements Behaviour<ElevResource>
         Optional<ElevResource> existingElev = elevRepository.getRepository().stream().filter(e -> e.getElevnummer().equals(elev.getElevnummer())).findAny();
         existingElev.ifPresent(e -> {
             if (Objects.nonNull(e.getFeidenavn()) && !Strings.isNullOrEmpty(e.getFeidenavn().getIdentifikatorverdi())) {
-                event.setProblems(Collections.singletonList(newProblem("feidenavn", "Feidenavn er allerede satt")));
+                addProblem(event, "feidenavn", "Feidenavn er allerede satt");
                 event.setResponseStatus(ResponseStatus.REJECTED);
                 log.info("Rejecting {}", event);
             }

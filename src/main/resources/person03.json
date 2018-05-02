@@ -1,0 +1,35 @@
+{
+  "kontaktinformasjon": {
+    "epostadresse": "GustavHofseth@rhyta.com",
+    "mobiltelefonnummer": "94259236"
+  },
+  "postadresse": {
+    "adresselinje": [
+      "Kikkutveien 91"
+    ],
+    "postnummer": "0491",
+    "poststed": "Oslo"
+  },
+  "bostedsadresse": {
+    "adresselinje": [
+      "Kikkutveien 91"
+    ],
+    "postnummer": "0491",
+    "poststed": "Oslo"
+  },
+  "fodselsdato": "2001-01-11T00:00:00Z",
+  "fodselsnummer": {
+    "identifikatorverdi": "11010159115"
+  },
+  "navn": {
+    "etternavn": "Hofseth",
+    "fornavn": "Gustav"
+  },
+  "_links": {
+    "elev": [
+      {
+        "href": "${utdanning.elev.elev}/elevnummer/500003"
+      }
+    ]
+  }
+}

@@ -9,7 +9,6 @@ import no.fint.provider.student.model.SkoleressursRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -24,7 +23,7 @@ public class ProhibitsUpdatesToFeideidForSkoleressurs implements Behaviour<Skole
         Optional<SkoleressursResource> existing = repository.getRepository().stream().filter(e -> e.getSystemId().equals(skoleressurs.getSystemId())).findAny();
         existing.ifPresent(e -> {
             if (Objects.nonNull(e.getFeidenavn()) && !Strings.isNullOrEmpty(e.getFeidenavn().getIdentifikatorverdi())) {
-                event.setProblems(Collections.singletonList(newProblem("feidenavn", "Feidenavn er allerede satt")));
+                addProblem(event, "feidenavn", "Feidenavn er allerede satt");
                 event.setResponseStatus(ResponseStatus.REJECTED);
                 log.info("Rejecting {}", event);
             }

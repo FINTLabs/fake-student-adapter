@@ -1,0 +1,32 @@
+{
+  "brukernavn": {
+    "gyldighetsperiode": {
+      "slutt": "2099-12-31T00:00:00Z",
+      "start": "2010-06-04T00:00:00Z"
+    },
+    "identifikatorverdi": "Daref1968"
+  },
+  "elevnummer": {
+    "identifikatorverdi": "500003"
+  },
+  "systemId": {
+    "identifikatorverdi": "0482e5cc-d95c-4d6d-b0b9-6bd103b8f57b"
+  },
+  "_links": {
+    "person": [
+      {
+        "href": "${felles.person}/fodselsnummer/11010159115"
+      }
+    ],
+    "elevforhold": [
+      {
+        "href": "${utdanning.elev.elevforhold}/systemid/E_500003_1"
+      }
+    ],
+    "self": [
+      {
+        "href": "${utdanning.elev.elev}/elevnummer/500003"
+      }
+    ]
+  }
+}

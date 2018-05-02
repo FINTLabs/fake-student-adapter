@@ -1,0 +1,32 @@
+{
+  "brukernavn": {
+    "gyldighetsperiode": {
+      "slutt": "2099-12-31T00:00:00Z",
+      "start": "2010-06-04T00:00:00Z"
+    },
+    "identifikatorverdi": "Pulithey1933"
+  },
+  "elevnummer": {
+    "identifikatorverdi": "500002"
+  },
+  "systemId": {
+    "identifikatorverdi": "d0df6fa9-e058-40d9-aa8c-46fc6c8c7ac9"
+  },
+  "_links": {
+    "person": [
+      {
+        "href": "${felles.person}/fodselsnummer/18010197461"
+      }
+    ],
+    "elevforhold": [
+      {
+        "href": "${utdanning.elev.elevforhold}/systemid/E_500002_1"
+      }
+    ],
+    "self": [
+      {
+        "href": "${utdanning.elev.elev}/elevnummer/500002"
+      }
+    ]
+  }
+}

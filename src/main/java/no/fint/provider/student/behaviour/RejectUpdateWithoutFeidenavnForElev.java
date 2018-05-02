@@ -7,7 +7,6 @@ import no.fint.event.model.ResponseStatus;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
 import java.util.Objects;
 
 @Service
@@ -16,7 +15,7 @@ public class RejectUpdateWithoutFeidenavnForElev implements Behaviour<ElevResour
     @Override
     public void accept(Event event, ElevResource elev) {
         if (Objects.isNull(elev.getFeidenavn()) || Strings.isNullOrEmpty(elev.getFeidenavn().getIdentifikatorverdi())) {
-            event.setProblems(Collections.singletonList(newProblem("feidenavn", "Mangler Feidenavn")));
+            addProblem(event, "feidenavn", "Mangler Feidenavn");
             event.setResponseStatus(ResponseStatus.REJECTED);
             log.info("Rejecting {}", event);
         }

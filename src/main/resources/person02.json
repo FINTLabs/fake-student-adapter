@@ -1,0 +1,35 @@
+{
+  "kontaktinformasjon": {
+    "epostadresse": "LeonaHansen@dayrep.com",
+    "mobiltelefonnummer": "41109815"
+  },
+  "postadresse": {
+    "adresselinje": [
+      "Scheitlies gate 48"
+    ],
+    "postnummer": "3045",
+    "poststed": "Drammen"
+  },
+  "bostedsadresse": {
+    "adresselinje": [
+      "Scheitlies gate 48"
+    ],
+    "postnummer": "3045",
+    "poststed": "Drammen"
+  },
+  "fodselsdato": "2001-01-18T00:00:00Z",
+  "fodselsnummer": {
+    "identifikatorverdi": "18010197461"
+  },
+  "navn": {
+    "etternavn": "Hansen",
+    "fornavn": "Leona"
+  },
+  "_links": {
+    "elev": [
+      {
+        "href": "${utdanning.elev.elev}/elevnummer/500002"
+      }
+    ]
+  }
+}
