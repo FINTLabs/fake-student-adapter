@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 @Service
 public class FakeData {
 
-    @Value("${fint.adapter.fake.students:1000}")
+    @Value("${fint.adapter.fake.students:3000}")
     private int antallElever;
 
     @Value("${fint.adapter.fake.groups:100}")
