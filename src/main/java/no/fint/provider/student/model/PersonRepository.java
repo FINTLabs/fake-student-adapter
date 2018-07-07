@@ -10,6 +10,7 @@ import no.fint.model.felles.FellesActions;
 import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.felles.PersonResource;
 import no.fint.provider.student.behaviour.Behaviour;
+import no.fint.provider.student.generate.FakeData;
 import no.fint.provider.student.service.Handler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -36,11 +37,16 @@ public class PersonRepository implements Handler {
     @Autowired
     private List<Behaviour<PersonResource>> behaviours;
 
+    @Autowired
+    private FakeData fakeData;
+
     @PostConstruct
     public void init() throws IOException {
         for (Resource r : new PathMatchingResourcePatternResolver(getClass().getClassLoader()).getResources("classpath*:/person*.json")) {
             repository.add(objectMapper.readValue(r.getInputStream(), PersonResource.class));
         }
+        repository.addAll(fakeData.getPersoner());
+        log.info("Repository contains {} items.", repository.size());
     }
 
     @Override

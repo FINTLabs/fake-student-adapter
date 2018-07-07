@@ -47,6 +47,7 @@ public class SkoleressursRepository implements Handler {
         for (Resource r : new PathMatchingResourcePatternResolver(getClass().getClassLoader()).getResources("classpath*:/skoleressurs*.json")) {
             repository.add(objectMapper.readValue(r.getInputStream(), SkoleressursResource.class));
         }
+        log.info("Repository contains {} items.", repository.size());
     }
 
     @Override

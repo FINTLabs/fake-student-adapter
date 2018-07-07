@@ -9,6 +9,7 @@ import no.fint.event.model.health.HealthStatus;
 import no.fint.model.resource.FintLinks;
 import no.fint.provider.adapter.event.EventResponseService;
 import no.fint.provider.adapter.event.EventStatusService;
+import no.fint.provider.student.SupportedActions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,9 @@ public class EventHandlerService {
 
     @Autowired
     private EventStatusService eventStatusService;
+
+    @Autowired
+    private SupportedActions supportedActions;
 
     @Autowired
     private Collection<Handler> handlers;
@@ -118,7 +122,10 @@ public class EventHandlerService {
     @PostConstruct
     void init() {
         actionsHandlerMap = new HashMap<>();
-        handlers.forEach(h -> h.actions().forEach(a -> actionsHandlerMap.put(a, h)));
-        log.info("Registered {} handlers.", actionsHandlerMap.size());
+        handlers.forEach(h -> h.actions().forEach(a -> {
+            actionsHandlerMap.put(a, h);
+            supportedActions.add(a);
+        }));
+        log.info("Registered {} handlers, supporting actions: {}", handlers.size(), supportedActions.getActions());
     }
 }

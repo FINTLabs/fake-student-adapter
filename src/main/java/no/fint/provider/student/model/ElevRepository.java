@@ -11,6 +11,7 @@ import no.fint.model.resource.FintLinks;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.utdanning.elev.ElevActions;
 import no.fint.provider.student.behaviour.Behaviour;
+import no.fint.provider.student.generate.FakeData;
 import no.fint.provider.student.service.Handler;
 import no.fint.provider.student.service.IdentifikatorFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +43,16 @@ public class ElevRepository implements Handler {
     @Getter
     private Collection<ElevResource> repository = new ConcurrentLinkedQueue<>();
 
+    @Autowired
+    private FakeData fakeData;
+
     @PostConstruct
     public void init() throws IOException {
         for (Resource r : new PathMatchingResourcePatternResolver(getClass().getClassLoader()).getResources("classpath*:/elev*.json")) {
             repository.add(objectMapper.readValue(r.getInputStream(), ElevResource.class));
         }
+        repository.addAll(fakeData.getElever());
+        log.info("Repository contains {} items.", repository.size());
     }
 
     @Override
