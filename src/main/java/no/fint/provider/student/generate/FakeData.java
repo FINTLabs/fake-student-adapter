@@ -1,6 +1,7 @@
 package no.fint.provider.student.generate;
 
 import lombok.Getter;
+import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.felles.PersonResource;
 import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
@@ -12,7 +13,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.sql.Date;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
@@ -61,9 +66,16 @@ public class FakeData {
             personer.add(i, personResource);
         }
 
+        Periode periode = new Periode();
+        periode.setStart(Date.from(LocalDate.of(2018,8,20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setSlutt(Date.from(LocalDate.of(2019,6,21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setBeskrivelse("2018-2019");
+
         basisgrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             BasisgruppeResource r = new BasisgruppeResource();
             r.setNavn(String.format("1ST%s", (char)('A' + i - 1)));
+            r.setBeskrivelse(r.getNavn());
+            r.setPeriode(Collections.singletonList(periode));
             r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
             return r;
         }).collect(Collectors.toList());
@@ -71,6 +83,8 @@ public class FakeData {
         kontaktlarergrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             KontaktlarergruppeResource r = new KontaktlarergruppeResource();
             r.setNavn(String.format("1SP%s", (char)('A' + i - 1)));
+            r.setBeskrivelse(r.getNavn());
+            r.setPeriode(Collections.singletonList(periode));
             r.setSystemId(personGenerator.identifikator(Integer.toString(100 + i)));
             return r;
         }).collect(Collectors.toList());
