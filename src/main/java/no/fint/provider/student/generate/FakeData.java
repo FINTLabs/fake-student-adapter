@@ -1,13 +1,11 @@
 package no.fint.provider.student.generate;
 
 import lombok.Getter;
+import no.fint.model.felles.kompleksedatatyper.Kontaktinformasjon;
 import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.felles.PersonResource;
-import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
-import no.fint.model.resource.utdanning.elev.ElevResource;
-import no.fint.model.resource.utdanning.elev.KontaktlarergruppeResource;
-import no.fint.model.resource.utdanning.elev.MedlemskapResource;
+import no.fint.model.resource.utdanning.elev.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -20,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -33,11 +32,17 @@ public class FakeData {
     @Value("${fint.adapter.fake.groups:100}")
     private int antallGrupper;
 
+    @Value("${fint.adapter.organizations}")
+    private String orgId;
+
     @Getter
     private List<PersonResource> personer;
 
     @Getter
     private List<ElevResource> elever;
+
+    @Getter
+    private List<ElevforholdResource> elevforhold;
 
     @Getter
     private List<BasisgruppeResource> basisgrupper;
@@ -55,13 +60,28 @@ public class FakeData {
     public void init() {
         personer = new ArrayList<>(antallElever);
         elever = new ArrayList<>(antallElever);
+        elevforhold = new ArrayList<>(antallElever);
         for (int i = 0; i < antallElever; i++) {
-            PersonResource personResource = personGenerator.generatePerson();
             String systemid = Integer.toString(50000 + i);
-            ElevResource elevResource = new ElevResource();
-            elevResource.setSystemId(personGenerator.identifikator(systemid));
-            elevResource.addPerson(Link.with(PersonResource.class, "fodselsnummer", personResource.getFodselsnummer().getIdentifikatorverdi()));
+            PersonResource personResource = personGenerator.generatePerson();
             personResource.addElev(Link.with(ElevResource.class, "systemid", systemid));
+
+            ElevResource elevResource = new ElevResource();
+            Kontaktinformasjon kontaktinformasjon = new Kontaktinformasjon();
+            kontaktinformasjon.setEpostadresse(String.format("%s@%s", systemid, orgId));
+            elevResource.setKontaktinformasjon(kontaktinformasjon);
+            elevResource.setElevnummer(personGenerator.identifikator(systemid));
+            elevResource.setSystemId(personGenerator.identifikator(systemid));
+            elevResource.setFeidenavn(personGenerator.identifikator(String.format("%s@%s", systemid, orgId)));
+            elevResource.addPerson(Link.with(PersonResource.class, "fodselsnummer", personResource.getFodselsnummer().getIdentifikatorverdi()));
+            elevResource.addElevforhold(Link.with(ElevforholdResource.class, "systemid", systemid));
+
+            ElevforholdResource elevforholdResource = new ElevforholdResource();
+            elevforholdResource.addElev(Link.with(ElevResource.class, "systemid", systemid));
+            elevforholdResource.setSystemId(personGenerator.identifikator(systemid));
+            elevforholdResource.setBeskrivelse(systemid);
+
+            elevforhold.add(i, elevforholdResource);
             elever.add(i, elevResource);
             personer.add(i, personResource);
         }
@@ -90,20 +110,31 @@ public class FakeData {
         }).collect(Collectors.toList());
 
         ThreadLocalRandom r = ThreadLocalRandom.current();
+        AtomicInteger id = new AtomicInteger(100000);
 
         medlemskap = Stream.concat(
-                elever.stream().filter(i -> r.nextBoolean()).limit(antallElever/antallGrupper).map(e -> {
+                elevforhold.stream().map(e -> {
                     MedlemskapResource m = new MedlemskapResource();
-                    m.addMedlem(Link.with(ElevResource.class, "systemid", e.getSystemId().getIdentifikatorverdi()));
+                    String systemId = Integer.toString(id.incrementAndGet());
+                    m.setSystemId(personGenerator.identifikator(systemId));
+                    m.addMedlem(Link.with(ElevforholdResource.class, "systemid", e.getSystemId().getIdentifikatorverdi()));
                     BasisgruppeResource g = personGenerator.sample(basisgrupper, r);
                     m.addGruppe(Link.with(BasisgruppeResource.class, "systemid", g.getSystemId().getIdentifikatorverdi()));
+                    Link link = Link.with(MedlemskapResource.class, "systemid", systemId);
+                    e.addMedlemskap(link);
+                    g.addMedlemskap(link);
                     return m;
                 }),
-                elever.stream().filter(i -> r.nextBoolean()).limit(antallElever/antallGrupper).map(e -> {
+                elevforhold.stream().map(e -> {
                     MedlemskapResource m = new MedlemskapResource();
-                    m.addMedlem(Link.with(ElevResource.class, "systemid", e.getSystemId().getIdentifikatorverdi()));
+                    String systemId = Integer.toString(id.incrementAndGet());
+                    m.setSystemId(personGenerator.identifikator(systemId));
+                    m.addMedlem(Link.with(ElevforholdResource.class, "systemid", e.getSystemId().getIdentifikatorverdi()));
                     KontaktlarergruppeResource g = personGenerator.sample(kontaktlarergrupper, r);
                     m.addGruppe(Link.with(KontaktlarergruppeResource.class, "systemid", g.getSystemId().getIdentifikatorverdi()));
+                    Link link = Link.with(MedlemskapResource.class, "systemid", systemId);
+                    e.addMedlemskap(link);
+                    g.addMedlemskap(link);
                     return m;
                 })).collect(Collectors.toList());
     }
