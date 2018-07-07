@@ -30,20 +30,20 @@ class FakeDataSpec extends Specification {
         when:
         k1 = fakeData.gruppekode(10)
         then:
-        k1 == '1BAJ'
+        k1 == '1NAA'
 
         when:
-        k1 = fakeData.gruppekode(26)
+        k1 = fakeData.gruppekode(16)
         then:
-        k1 == '1BAZ'
+        k1 == '1BAB'
 
         when:
-        k1 = fakeData.gruppekode(27)
+        k1 = fakeData.gruppekode(15)
         then:
-        k1 == '1DHA'
+        k1 == '1TPA'
 
         when:
-        k1 = fakeData.gruppekode(339)
+        k1 = fakeData.gruppekode(14)
         then:
         k1 == '1STA'
 
