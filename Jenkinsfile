@@ -10,22 +10,23 @@ pipeline {
             }
         }
         stage('Publish') {
-            when {
-                branch 'master'
-            }
+            when { branch 'master' }
             steps {
-                sh "docker tag ${GIT_COMMIT} dtr.rogfk.no/k48402217/fake-student-adapter:latest"
-                withDockerRegistry([credentialsId: 'dtr-rogfk-no', url: 'https://dtr.rogfk.no']) {
-                    sh "docker push 'dtr.rogfk.no/k48402217/fake-student-adapter:latest'"
+                sh "docker tag ${GIT_COMMIT} dtr.fintlabs.no/beta/fake-student-adapter:latest"
+                withDockerRegistry([credentialsId: 'dtr-fintlabs-no', url: 'https://dtr.fintlabs.no']) {
+                    sh "docker push 'dtr.fintlabs.no/beta/fake-student-adapter:latest'"
+                }
+                withDockerServer([credentialsId: "ucp-fintlabs-jenkins-bundle", uri: "tcp://ucp.fintlabs.no:443"]) {
+                    sh "docker service update fake-adapters_student --image dtr.fintlabs.no/beta/fake-student-adapter:latest --detach=false"
                 }
             }
         }
         stage('Publish PR') {
             when { changeRequest() }
             steps {
-                sh "docker tag ${GIT_COMMIT} dtr.rogfk.no/k48402217/fake-student-adapter:${BRANCH_NAME}"
-                withDockerRegistry([credentialsId: 'dtr-rogfk-no', url: 'https://dtr.rogfk.no']) {
-                    sh "docker push 'dtr.rogfk.no/k48402217/fake-student-adapter:${BRANCH_NAME}'"
+                sh "docker tag ${GIT_COMMIT} dtr.fintlabs.no/beta/fake-student-adapter:${BRANCH_NAME}"
+                withDockerRegistry([credentialsId: 'dtr-fintlabs-no', url: 'https://dtr.fintlabs.no']) {
+                    sh "docker push 'dtr.fintlabs.no/beta/fake-student-adapter:${BRANCH_NAME}'"
                 }
             }
         }
