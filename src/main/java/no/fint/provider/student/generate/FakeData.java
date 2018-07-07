@@ -35,6 +35,8 @@ public class FakeData {
     @Value("${fint.adapter.organizations}")
     private String orgId;
 
+    private String[] programmer = { "BA", "DH", "EL", "HS", "ID", "KD", "MD", "ME", "MK", "NA", "PB", "RM", "SS", "ST", "TP" };
+
     @Getter
     private List<PersonResource> personer;
 
@@ -93,7 +95,7 @@ public class FakeData {
 
         basisgrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             BasisgruppeResource r = new BasisgruppeResource();
-            r.setNavn(String.format("1ST%s", (char)('A' + i - 1)));
+            r.setNavn(gruppekode(i));
             r.setBeskrivelse(r.getNavn());
             r.setPeriode(Collections.singletonList(periode));
             r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
@@ -102,7 +104,7 @@ public class FakeData {
 
         kontaktlarergrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             KontaktlarergruppeResource r = new KontaktlarergruppeResource();
-            r.setNavn(String.format("1SP%s", (char)('A' + i - 1)));
+            r.setNavn("K" + gruppekode(i));
             r.setBeskrivelse(r.getNavn());
             r.setPeriode(Collections.singletonList(periode));
             r.setSystemId(personGenerator.identifikator(Integer.toString(100 + i)));
@@ -137,6 +139,15 @@ public class FakeData {
                     g.addMedlemskap(link);
                     return m;
                 })).collect(Collectors.toList());
+    }
+
+    public String gruppekode(int id) {
+        int div = 26;
+        assert id <= programmer.length * div;
+        id--;
+        int mod = id % div;
+        int p = id / div;
+        return String.format("1%s%s", programmer[p], (char)('A' + mod));
     }
 
 }

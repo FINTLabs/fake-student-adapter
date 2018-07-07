@@ -20,4 +20,36 @@ class FakeDataSpec extends Specification {
         then:
         noExceptionThrown()
     }
+
+    def "Verify generation of group codes"() {
+        when:
+        def k1 = fakeData.gruppekode(1)
+        then:
+        k1 == '1BAA'
+
+        when:
+        k1 = fakeData.gruppekode(10)
+        then:
+        k1 == '1BAJ'
+
+        when:
+        k1 = fakeData.gruppekode(26)
+        then:
+        k1 == '1BAZ'
+
+        when:
+        k1 = fakeData.gruppekode(27)
+        then:
+        k1 == '1DHA'
+
+        when:
+        k1 = fakeData.gruppekode(339)
+        then:
+        k1 == '1STA'
+
+        when:
+        k1 = fakeData.gruppekode(390)
+        then:
+        k1 == '1TPZ'
+    }
 }
