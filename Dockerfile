@@ -4,7 +4,7 @@ COPY . .
 ARG apiVersion
 RUN gradle --no-daemon -PapiVersion=${apiVersion} build
 
-FROM openjdk:8-jre-alpine
+FROM azul/zulu-openjdk-alpine:8
 COPY --from=builder /home/gradle/build/deps/external/*.jar /data/
 COPY --from=builder /home/gradle/build/deps/fint/*.jar /data/
 COPY --from=builder /home/gradle/build/libs/fake-student-adapter-*.jar /data/fake-student-adapter.jar
