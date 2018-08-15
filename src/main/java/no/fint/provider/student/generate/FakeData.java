@@ -142,12 +142,14 @@ public class FakeData {
     }
 
     public String gruppekode(int id) {
-        assert id <= programmer.length * 26;
+        assert id <= programmer.length * 26 * 3;
         id--;
+        int trinn = id % 3 + 1;
+        id /= 3;
         int div = programmer.length;
         int mod = id % div;
         int p = id / div;
-        return String.format("1%s%s", programmer[mod], (char)('A' + p));
+        return String.format("%d%s%s", trinn, programmer[mod], (char)('A' + p));
     }
 
 }

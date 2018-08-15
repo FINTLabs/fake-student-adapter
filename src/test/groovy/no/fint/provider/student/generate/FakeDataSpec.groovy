@@ -23,33 +23,15 @@ class FakeDataSpec extends Specification {
 
     def "Verify generation of group codes"() {
         when:
-        def k1 = fakeData.gruppekode(1)
-        then:
-        k1 == '1BAA'
+        def g = (1..1170).collect(fakeData.&gruppekode)
 
-        when:
-        k1 = fakeData.gruppekode(10)
         then:
-        k1 == '1NAA'
-
-        when:
-        k1 = fakeData.gruppekode(16)
-        then:
-        k1 == '1BAB'
-
-        when:
-        k1 = fakeData.gruppekode(15)
-        then:
-        k1 == '1TPA'
-
-        when:
-        k1 = fakeData.gruppekode(14)
-        then:
-        k1 == '1STA'
-
-        when:
-        k1 = fakeData.gruppekode(390)
-        then:
-        k1 == '1TPZ'
+        g.contains('1BAA')
+        g.contains('2BAA')
+        g.contains('3BAA')
+        g.contains('1DHA')
+        g.contains('1TPA')
+        g.contains('1STA')
+        g.contains('3TPZ')
     }
 }
