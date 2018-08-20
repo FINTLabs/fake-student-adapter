@@ -79,6 +79,21 @@ public class PersonGenerator {
         return result;
     }
 
+    public static String getPersonnavnAsString(Personnavn navn) {
+        if (navn == null) return null;
+        String result = "";
+        if (!org.springframework.util.StringUtils.isEmpty(navn.getEtternavn()))
+            result += navn.getEtternavn();
+        if (!org.springframework.util.StringUtils.isEmpty(navn.getFornavn())) {
+            if (!result.isEmpty())
+                result += ", ";
+            result += navn.getFornavn();
+        }
+        if (!org.springframework.util.StringUtils.isEmpty(navn.getMellomnavn()))
+            result += " " + navn.getMellomnavn();
+        return result;
+    }
+
     public Identifikator identifikator(String indentifikatorverdi) {
         Identifikator identifikator = new Identifikator();
         identifikator.setIdentifikatorverdi(indentifikatorverdi);

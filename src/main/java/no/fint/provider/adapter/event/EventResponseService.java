@@ -6,10 +6,7 @@ import no.fint.event.model.Event;
 import no.fint.event.model.HeaderConstants;
 import no.fint.provider.adapter.FintAdapterProps;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
@@ -35,6 +32,7 @@ public class EventResponseService {
         log.debug("Response: {}", event);
         HttpHeaders headers = new HttpHeaders();
         headers.put(HeaderConstants.ORG_ID, Lists.newArrayList(event.getOrgId()));
+        headers.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_UTF8_VALUE);
         ResponseEntity<Void> response = restTemplate.exchange(props.getResponseEndpoint(), HttpMethod.POST, new HttpEntity<>(event, headers), Void.class);
         log.info("Provider POST response: {}", response.getStatusCode());
     }

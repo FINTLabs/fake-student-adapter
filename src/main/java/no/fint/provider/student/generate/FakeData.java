@@ -26,10 +26,10 @@ import java.util.stream.Stream;
 @Service
 public class FakeData {
 
-    @Value("${fint.adapter.fake.students:3000}")
+    @Value("${fint.adapter.fake.students:100}")
     private int antallElever;
 
-    @Value("${fint.adapter.fake.groups:100}")
+    @Value("${fint.adapter.fake.groups:10}")
     private int antallGrupper;
 
     @Value("${fint.adapter.organizations}")
@@ -87,6 +87,8 @@ public class FakeData {
             elever.add(i, elevResource);
             personer.add(i, personResource);
         }
+
+        personer.stream().map(PersonResource::getNavn).map(PersonGenerator::getPersonnavnAsString).forEach(System.out::println);
 
         Periode periode = new Periode();
         periode.setStart(Date.from(LocalDate.of(2018,8,20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
