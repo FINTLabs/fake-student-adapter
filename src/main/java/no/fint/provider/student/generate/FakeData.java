@@ -1,11 +1,15 @@
 package no.fint.provider.student.generate;
 
 import lombok.Getter;
+import no.fint.fake.person.PersonGenerator;
 import no.fint.model.felles.kompleksedatatyper.Kontaktinformasjon;
 import no.fint.model.felles.kompleksedatatyper.Periode;
 import no.fint.model.resource.Link;
 import no.fint.model.resource.felles.PersonResource;
-import no.fint.model.resource.utdanning.elev.*;
+import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
+import no.fint.model.resource.utdanning.elev.ElevResource;
+import no.fint.model.resource.utdanning.elev.ElevforholdResource;
+import no.fint.model.resource.utdanning.elev.KontaktlarergruppeResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -18,10 +22,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 @Service
 public class FakeData {
@@ -51,9 +53,6 @@ public class FakeData {
 
     @Getter
     private List<KontaktlarergruppeResource> kontaktlarergrupper;
-
-    @Getter
-    private List<MedlemskapResource> medlemskap;
 
     @Autowired
     private PersonGenerator personGenerator;
@@ -114,33 +113,16 @@ public class FakeData {
         }).collect(Collectors.toList());
 
         ThreadLocalRandom r = ThreadLocalRandom.current();
-        AtomicInteger id = new AtomicInteger(100000);
 
-        medlemskap = Stream.concat(
-                elevforhold.stream().map(e -> {
-                    MedlemskapResource m = new MedlemskapResource();
-                    String systemId = Integer.toString(id.incrementAndGet());
-                    m.setSystemId(personGenerator.identifikator(systemId));
-                    m.addMedlem(Link.with(ElevforholdResource.class, "systemid", e.getSystemId().getIdentifikatorverdi()));
-                    BasisgruppeResource g = personGenerator.sample(basisgrupper, r);
-                    m.addGruppe(Link.with(BasisgruppeResource.class, "systemid", g.getSystemId().getIdentifikatorverdi()));
-                    Link link = Link.with(MedlemskapResource.class, "systemid", systemId);
-                    e.addMedlemskap(link);
-                    g.addMedlemskap(link);
-                    return m;
-                }),
-                elevforhold.stream().map(e -> {
-                    MedlemskapResource m = new MedlemskapResource();
-                    String systemId = Integer.toString(id.incrementAndGet());
-                    m.setSystemId(personGenerator.identifikator(systemId));
-                    m.addMedlem(Link.with(ElevforholdResource.class, "systemid", e.getSystemId().getIdentifikatorverdi()));
-                    KontaktlarergruppeResource g = personGenerator.sample(kontaktlarergrupper, r);
-                    m.addGruppe(Link.with(KontaktlarergruppeResource.class, "systemid", g.getSystemId().getIdentifikatorverdi()));
-                    Link link = Link.with(MedlemskapResource.class, "systemid", systemId);
-                    e.addMedlemskap(link);
-                    g.addMedlemskap(link);
-                    return m;
-                })).collect(Collectors.toList());
+        elevforhold.forEach(e -> {
+            BasisgruppeResource b = personGenerator.sample(basisgrupper, r);
+            KontaktlarergruppeResource k = personGenerator.sample(kontaktlarergrupper, r);
+            e.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
+            e.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
+            k.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+            b.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+        });
+
     }
 
     public String gruppekode(int id) {

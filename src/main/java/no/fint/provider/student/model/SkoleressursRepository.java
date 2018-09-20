@@ -59,34 +59,28 @@ public class SkoleressursRepository implements Handler {
     public void accept(Event<FintLinks> response) {
         log.debug("Handling {} ...", response);
         log.trace("Event data: {}", response.getData());
-        try {
-            switch (ElevActions.valueOf(response.getAction())) {
-                case GET_ALL_SKOLERESSURS:
-                    response.setData(new ArrayList<>(repository));
-                    break;
-                case UPDATE_SKOLERESSURS:
-                    List<SkoleressursResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, SkoleressursResource.class));
-                    log.trace("Converted data: {}", data);
-                    data.stream().filter(i-> i.getSystemId()==null||i.getSystemId().getIdentifikatorverdi()==null).forEach(i->i.setSystemId(identifikatorFactory.create()));
+        switch (ElevActions.valueOf(response.getAction())) {
+            case GET_ALL_SKOLERESSURS:
+                response.setData(new ArrayList<>(repository));
+                break;
+            case UPDATE_SKOLERESSURS:
+                List<SkoleressursResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, SkoleressursResource.class));
+                log.trace("Converted data: {}", data);
+                data.stream().filter(i -> i.getSystemId() == null || i.getSystemId().getIdentifikatorverdi() == null).forEach(i -> i.setSystemId(identifikatorFactory.create()));
+                repository.addAll(data);
+                response.setResponseStatus(ResponseStatus.ACCEPTED);
+                response.setData(null);
+                behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
+                if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
+                    response.setData(new ArrayList<>(data));
+                    data.forEach(r -> repository.removeIf(i -> i.getSystemId().getIdentifikatorverdi().equals(r.getSystemId().getIdentifikatorverdi())));
                     repository.addAll(data);
-                    response.setResponseStatus(ResponseStatus.ACCEPTED);
-                    response.setData(null);
-                    behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
-                    if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
-                        response.setData(new ArrayList<>(data));
-                        data.forEach(r -> repository.removeIf(i -> i.getSystemId().getIdentifikatorverdi().equals(r.getSystemId().getIdentifikatorverdi())));
-                        repository.addAll(data);
-                    }
-                    break;
-                default:
-                    response.setStatus(Status.ADAPTER_REJECTED);
-                    response.setResponseStatus(ResponseStatus.REJECTED);
-                    response.setMessage("Invalid action");
-            }
-        } catch (Exception e) {
-            log.error("Error!", e);
-            response.setResponseStatus(ResponseStatus.ERROR);
-            response.setMessage(e.getMessage());
+                }
+                break;
+            default:
+                response.setStatus(Status.ADAPTER_REJECTED);
+                response.setResponseStatus(ResponseStatus.REJECTED);
+                response.setMessage("Invalid action");
         }
     }
 

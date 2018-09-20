@@ -64,33 +64,27 @@ public class ElevRepository implements Handler {
     public void accept(Event<FintLinks> response) {
         log.debug("Handling {} ...", response);
         log.trace("Event data: {}", response.getData());
-        try {
-            switch (ElevActions.valueOf(response.getAction())) {
-                case GET_ALL_ELEV:
-                    response.setData(new ArrayList<>(repository));
-                    break;
-                case UPDATE_ELEV:
-                    List<ElevResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, ElevResource.class));
-                    log.trace("Converted data: {}", data);
-                    data.stream().filter(i-> i.getElevnummer()==null||i.getElevnummer().getIdentifikatorverdi()==null).forEach(i->i.setSystemId(identifikatorFactory.create()));
-                    response.setResponseStatus(ResponseStatus.ACCEPTED);
-                    response.setData(null);
-                    behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
-                    if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
-                        data.forEach(r -> repository.removeIf(i -> i.getElevnummer().getIdentifikatorverdi().equals(r.getElevnummer().getIdentifikatorverdi())));
-                        response.setData(new ArrayList<>(data));
-                        repository.addAll(data);
-                    }
-                    break;
-                default:
-                    response.setStatus(Status.ADAPTER_REJECTED);
-                    response.setResponseStatus(ResponseStatus.REJECTED);
-                    response.setMessage("Invalid action");
-            }
-        } catch (Exception e) {
-            log.error("Error!", e);
-            response.setResponseStatus(ResponseStatus.ERROR);
-            response.setMessage(e.getMessage());
+        switch (ElevActions.valueOf(response.getAction())) {
+            case GET_ALL_ELEV:
+                response.setData(new ArrayList<>(repository));
+                break;
+            case UPDATE_ELEV:
+                List<ElevResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, ElevResource.class));
+                log.trace("Converted data: {}", data);
+                data.stream().filter(i -> i.getElevnummer() == null || i.getElevnummer().getIdentifikatorverdi() == null).forEach(i -> i.setSystemId(identifikatorFactory.create()));
+                response.setResponseStatus(ResponseStatus.ACCEPTED);
+                response.setData(null);
+                behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
+                if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
+                    data.forEach(r -> repository.removeIf(i -> i.getElevnummer().getIdentifikatorverdi().equals(r.getElevnummer().getIdentifikatorverdi())));
+                    response.setData(new ArrayList<>(data));
+                    repository.addAll(data);
+                }
+                break;
+            default:
+                response.setStatus(Status.ADAPTER_REJECTED);
+                response.setResponseStatus(ResponseStatus.REJECTED);
+                response.setMessage("Invalid action");
         }
     }
 

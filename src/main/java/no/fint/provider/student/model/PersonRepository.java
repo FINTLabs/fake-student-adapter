@@ -58,32 +58,26 @@ public class PersonRepository implements Handler {
     public void accept(Event<FintLinks> response) {
         log.debug("Handling {} ...", response);
         log.trace("Event data: {}", response.getData());
-        try {
-            switch (FellesActions.valueOf(response.getAction())) {
-                case GET_ALL_PERSON:
-                    response.setData(new ArrayList<>(repository));
-                    break;
-                case UPDATE_PERSON:
-                    List<PersonResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, PersonResource.class));
-                    log.trace("Converted data: {}", data);
-                    response.setResponseStatus(ResponseStatus.ACCEPTED);
-                    response.setData(null);
-                    behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
-                    if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
-                        response.setData(new ArrayList<>(data));
-                        data.forEach(r -> repository.removeIf(i -> i.getFodselsnummer().getIdentifikatorverdi().equals(r.getFodselsnummer().getIdentifikatorverdi())));
-                        repository.addAll(data);
-                    }
-                    break;
-                default:
-                    response.setStatus(Status.ADAPTER_REJECTED);
-                    response.setResponseStatus(ResponseStatus.REJECTED);
-                    response.setMessage("Invalid action");
-            }
-        } catch (Exception e) {
-            log.error("Error!", e);
-            response.setResponseStatus(ResponseStatus.ERROR);
-            response.setMessage(e.getMessage());
+        switch (FellesActions.valueOf(response.getAction())) {
+            case GET_ALL_PERSON:
+                response.setData(new ArrayList<>(repository));
+                break;
+            case UPDATE_PERSON:
+                List<PersonResource> data = objectMapper.convertValue(response.getData(), objectMapper.getTypeFactory().constructCollectionType(List.class, PersonResource.class));
+                log.trace("Converted data: {}", data);
+                response.setResponseStatus(ResponseStatus.ACCEPTED);
+                response.setData(null);
+                behaviours.forEach(b -> data.forEach(b.acceptPartially(response)));
+                if (response.getResponseStatus() == ResponseStatus.ACCEPTED) {
+                    response.setData(new ArrayList<>(data));
+                    data.forEach(r -> repository.removeIf(i -> i.getFodselsnummer().getIdentifikatorverdi().equals(r.getFodselsnummer().getIdentifikatorverdi())));
+                    repository.addAll(data);
+                }
+                break;
+            default:
+                response.setStatus(Status.ADAPTER_REJECTED);
+                response.setResponseStatus(ResponseStatus.REJECTED);
+                response.setMessage("Invalid action");
         }
     }
 

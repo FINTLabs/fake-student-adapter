@@ -13,7 +13,6 @@ import no.fint.model.utdanning.elev.ElevActions;
 import no.fint.provider.student.generate.FakeData;
 import no.fint.provider.student.service.Handler;
 import no.fint.provider.student.service.IdentifikatorFactory;
-import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -55,20 +54,14 @@ public class BasisgruppeRepository implements Handler {
     public void accept(Event<FintLinks> response) {
         log.debug("Handling {} ...", response);
         log.trace("Event data: {}", response.getData());
-        try {
-            switch (ElevActions.valueOf(response.getAction())) {
-                case GET_ALL_BASISGRUPPE:
-                    response.setData(new ArrayList<>(repository));
-                    break;
-                default:
-                    response.setStatus(Status.ADAPTER_REJECTED);
-                    response.setResponseStatus(ResponseStatus.REJECTED);
-                    response.setMessage("Invalid action");
-            }
-        } catch (Exception e) {
-            log.error("Error!", e);
-            response.setResponseStatus(ResponseStatus.ERROR);
-            response.setMessage(ExceptionUtils.getStackTrace(e));
+        switch (ElevActions.valueOf(response.getAction())) {
+            case GET_ALL_BASISGRUPPE:
+                response.setData(new ArrayList<>(repository));
+                break;
+            default:
+                response.setStatus(Status.ADAPTER_REJECTED);
+                response.setResponseStatus(ResponseStatus.REJECTED);
+                response.setMessage("Invalid action");
         }
     }
 

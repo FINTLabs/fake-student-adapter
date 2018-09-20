@@ -10,6 +10,7 @@ import no.fint.model.resource.FintLinks;
 import no.fint.provider.adapter.event.EventResponseService;
 import no.fint.provider.adapter.event.EventStatusService;
 import no.fint.provider.student.SupportedActions;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -69,18 +70,24 @@ public class EventHandlerService {
         if (event.isHealthCheck()) {
             postHealthCheckResponse(event);
         } else {
-            if (event != null && eventStatusService.verifyEvent(event).getStatus() == Status.ADAPTER_ACCEPTED) {
+            if (eventStatusService.verifyEvent(event).getStatus() == Status.ADAPTER_ACCEPTED) {
                 String action = event.getAction();
                 Event<FintLinks> responseEvent = new Event<>(event);
 
-                actionsHandlerMap.getOrDefault(action, e -> {
-                    log.warn("No handler found for {}", action);
-                    e.setStatus(Status.ADAPTER_REJECTED);
-                    e.setResponseStatus(ResponseStatus.REJECTED);
-                    e.setMessage("Unsupported action");
-                }).accept(responseEvent);
+                try {
+                    actionsHandlerMap.getOrDefault(action, e -> {
+                        log.warn("No handler found for {}", action);
+                        e.setStatus(Status.ADAPTER_REJECTED);
+                        e.setResponseStatus(ResponseStatus.REJECTED);
+                        e.setMessage("Unsupported action");
+                    }).accept(responseEvent);
+                } catch (Exception e) {
+                    responseEvent.setResponseStatus(ResponseStatus.ERROR);
+                    responseEvent.setMessage(ExceptionUtils.getStackTrace(e));
+                } finally {
+                    eventResponseService.postResponse(responseEvent);
+                }
 
-                eventResponseService.postResponse(responseEvent);
             }
         }
     }
