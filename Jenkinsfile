@@ -9,7 +9,7 @@ pipeline {
                 sh "docker build --tag ${GIT_COMMIT} --build-arg apiVersion=${props.apiVersion} ."
             }
         }
-        stage('Publish build.${BUILD_NUMBER}') {
+        stage('Publish master') {
             when { branch 'master' }
             steps {
                 sh "docker tag ${GIT_COMMIT} fintlabs.azurecr.io/fake-student-adapter:build.${BUILD_NUMBER}"
