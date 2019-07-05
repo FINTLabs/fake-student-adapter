@@ -115,8 +115,8 @@ public class FakeData {
         ThreadLocalRandom r = ThreadLocalRandom.current();
 
         elevforhold.forEach(e -> {
-            BasisgruppeResource b = personGenerator.sample(basisgrupper, r);
-            KontaktlarergruppeResource k = personGenerator.sample(kontaktlarergrupper, r);
+            BasisgruppeResource b = sample(basisgrupper, r);
+            KontaktlarergruppeResource k = sample(kontaktlarergrupper, r);
             e.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
             e.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
             k.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
@@ -134,6 +134,10 @@ public class FakeData {
         int mod = id % div;
         int p = id / div;
         return String.format("%d%s%s", trinn, programmer[mod], (char)('A' + p));
+    }
+
+    private static <T> T sample(List<T> collection, ThreadLocalRandom random) {
+        return collection.get(random.nextInt(collection.size()));
     }
 
 }
