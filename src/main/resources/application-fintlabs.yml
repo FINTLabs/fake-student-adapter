@@ -1,0 +1,23 @@
+security:
+  basic:
+    enabled: false
+
+fint:
+  adapter:
+    organizations: fake.fintlabs.no
+    endpoints:
+      providers:
+        elev: https://beta.felleskomponent.no/utdanning/elev/provider
+        utdanningsprogram: https://beta.felleskomponent.no/utdanning/utdanningsprogram/provider
+    fake:
+      students: 2000
+      groups: 200
+  oauth:
+    enabled: true
+    username: fake@adapter.fintlabs.no
+    password: tb2va8kn6Hrl7DGXOivV4ef9wPEhjg4L
+    client-id: ff1c79b5-2a75-4416-b95c-9d1a4b4a2d6b
+    client-secret: ln6nlTtgPq4wVHOG1nNv4d2uNjdb_DHX6hJyhpReaGxok5E9WnFS26uv2vDKYm-WQXkYtVnCB8or4o0u-5EykA
+
+server:
+  port: 8092

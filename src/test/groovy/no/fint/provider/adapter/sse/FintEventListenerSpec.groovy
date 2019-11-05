@@ -25,6 +25,6 @@ class FintEventListenerSpec extends Specification {
         fintEventListener.onEvent(event)
 
         then:
-        1 * eventHandlerService.handleEvent(event)
+        1 * eventHandlerService.handleEvent(component, event)
     }
 }
