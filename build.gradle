@@ -54,7 +54,7 @@ dependencies {
 
     compile("no.fint:fint-utdanning-resource-model-java:${apiVersion}")
 
-    compile('org.springframework.boot:spring-boot-devtools')
+    compile('org.springframework.boot:spring-boot-actuator')
     compile('org.springframework.boot:spring-boot-starter-web')
 
     testCompile('cglib:cglib-nodep:3.2.12')
