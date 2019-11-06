@@ -4,7 +4,7 @@ import no.fint.event.model.DefaultActions
 import no.fint.event.model.Event
 import no.fint.event.model.Status
 import no.fint.provider.adapter.FintAdapterEndpoints
-import no.fint.provider.springer.SupportedActions
+import no.fint.provider.student.SupportedActions
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
