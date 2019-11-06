@@ -1,13 +1,3 @@
-apiVersion: v1
-kind: Service
-metadata:
-  labels: {app: adapter-fake-elev}
-  name: adapter-fake-elev
-spec:
-  ports:
-    - {name: '8091', port: 8091}
-  selector: {app: adapter-fake-elev}
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -30,7 +20,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: adapter-fake-elev
-          image: fintlabs.azurecr.io/fake-adapter-fake-elev:build.21
+          image: fintlabs.azurecr.io/fake-student-adapter:build.21
           resources:
             limits:
               memory: "2Gi"
@@ -55,24 +45,16 @@ spec:
               value: 'Fake fake-elev Adapter'
             - name: security.basic.enabled
               value: 'false'
-            - name: fint.hazelcast.kubernetes.enabled
-              value: 'true'
-            - name: fint.hazelcast.kubernetes.namespace
-              value: default
-            - name: fint.hazelcast.kubernetes.labelName
-              value: app
-            - name: fint.hazelcast.kubernetes.labelValue
-              value: adapter-fake-elev
             - name: fint.adapter.organizations
               value: fake.fintlabs.no
             - name: fint.adapter.fake.students
               value: '2000'
             - name: fint.adapter.fake.groups
               value: '200'
-            - name: fint.adapter.fake.schools
-              value: '2'
             - name: fint.adapter.endponts.providers.elev
               value: https://beta.felleskomponent.no/utdanning/elev/provider
+            - name: fint.adapter.endponts.providers.utdanningsprogram
+              value: https://beta.felleskomponent.no/utdanning/utdanningsprogram/provider
             - name: fint.oauth.enabled
               value: "true"
             - name: fint.oauth.access-token-uri

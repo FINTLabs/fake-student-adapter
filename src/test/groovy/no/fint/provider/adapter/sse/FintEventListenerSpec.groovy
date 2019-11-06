@@ -14,7 +14,7 @@ class FintEventListenerSpec extends Specification {
     void setup() {
         inboundEvent = Mock(InboundEvent)
         eventHandlerService = Mock(EventHandlerService)
-        fintEventListener = new FintEventListener(eventHandlerService)
+        fintEventListener = new FintEventListener('test', eventHandlerService)
     }
 
     def "Handle incoming SSE event"() {
@@ -25,6 +25,6 @@ class FintEventListenerSpec extends Specification {
         fintEventListener.onEvent(event)
 
         then:
-        1 * eventHandlerService.handleEvent(component, event)
+        1 * eventHandlerService.handleEvent('test', event)
     }
 }

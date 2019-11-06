@@ -1,7 +1,7 @@
 package no.fint.provider.adapter.event
 
 import no.fint.event.model.Event
-import no.fint.provider.adapter.FintAdapterProps
+import no.fint.provider.adapter.FintAdapterEndpoints
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpMethod
 import org.springframework.http.ResponseEntity
@@ -10,24 +10,26 @@ import spock.lang.Specification
 
 class EventResponseServiceSpec extends Specification {
     private EventResponseService eventResponseService
-    private FintAdapterProps props
+    private FintAdapterEndpoints endpoints
     private RestTemplate restTemplate
 
     void setup() {
-        props = Mock(FintAdapterProps)
+        endpoints = Mock()
         restTemplate = Mock(RestTemplate)
-        eventResponseService = new EventResponseService(props: props, restTemplate: restTemplate)
+        eventResponseService = new EventResponseService(endpoints: endpoints, restTemplate: restTemplate)
     }
 
     def "Post response"() {
         given:
         def event = new Event(orgId: 'rogfk.no')
+        def component = 'test'
 
         when:
-        eventResponseService.postResponse(event)
+        eventResponseService.postResponse(component, event)
 
         then:
-        1 * props.getResponseEndpoint() >> 'http://localhost'
-        1 * restTemplate.exchange('http://localhost', HttpMethod.POST, _ as HttpEntity, Void) >> ResponseEntity.ok().build()
+        1 * endpoints.getProviders() >> ['test':'http://localhost']
+        1 * endpoints.getResponse() >> '/response'
+        1 * restTemplate.exchange('http://localhost/response', HttpMethod.POST, _ as HttpEntity, Void) >> ResponseEntity.ok().build()
     }
 }
