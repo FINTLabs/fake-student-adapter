@@ -6,3 +6,4 @@ schema
 out
 *.iml
 javadocs/
+application-*.yml

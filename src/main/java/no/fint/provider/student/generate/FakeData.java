@@ -10,6 +10,8 @@ import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.elev.KontaktlarergruppeResource;
+import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.fint.model.utdanning.utdanningsprogram.Skole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,11 +56,25 @@ public class FakeData {
     @Getter
     private List<KontaktlarergruppeResource> kontaktlarergrupper;
 
+    @Getter
+    private List<SkoleResource> skoler;
+
     @Autowired
     private PersonGenerator personGenerator;
 
     @PostConstruct
     public void init() {
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+
+        skoler = new ArrayList<>(1);
+        SkoleResource skoleResource = new SkoleResource();
+
+        skoleResource.setSkolenummer(personGenerator.identifikator("42"));
+        skoleResource.setSystemId(personGenerator.identifikator("42"));
+        skoleResource.setNavn("Jalla videregående skole");
+        skoleResource.setOrganisasjonsnummer(personGenerator.identifikator("999999999"));
+        skoler.add(skoleResource);
+
         personer = new ArrayList<>(antallElever);
         elever = new ArrayList<>(antallElever);
         elevforhold = new ArrayList<>(antallElever);
@@ -90,14 +106,14 @@ public class FakeData {
         personer.stream().map(PersonResource::getNavn).map(PersonGenerator::getPersonnavnAsString).forEach(System.out::println);
 
         Periode periode = new Periode();
-        periode.setStart(Date.from(LocalDate.of(2018,8,20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
-        periode.setSlutt(Date.from(LocalDate.of(2019,6,21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
-        periode.setBeskrivelse("2018-2019");
+        periode.setStart(Date.from(LocalDate.of(2019,8,20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setSlutt(Date.from(LocalDate.of(2020,6,21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setBeskrivelse("2019-2020");
 
         basisgrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             BasisgruppeResource r = new BasisgruppeResource();
             r.setNavn(gruppekode(i));
-            r.setBeskrivelse(r.getNavn());
+            r.setBeskrivelse("BG " + r.getNavn());
             r.setPeriode(Collections.singletonList(periode));
             r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
             return r;
@@ -106,21 +122,26 @@ public class FakeData {
         kontaktlarergrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             KontaktlarergruppeResource r = new KontaktlarergruppeResource();
             r.setNavn("K" + gruppekode(i));
-            r.setBeskrivelse(r.getNavn());
+            r.setBeskrivelse("KG " + r.getNavn());
             r.setPeriode(Collections.singletonList(periode));
             r.setSystemId(personGenerator.identifikator(Integer.toString(100 + i)));
             return r;
         }).collect(Collectors.toList());
 
-        ThreadLocalRandom r = ThreadLocalRandom.current();
-
         elevforhold.forEach(e -> {
-            BasisgruppeResource b = sample(basisgrupper, r);
-            KontaktlarergruppeResource k = sample(kontaktlarergrupper, r);
+            BasisgruppeResource b = sample(basisgrupper, random);
+            KontaktlarergruppeResource k = sample(kontaktlarergrupper, random);
             e.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
             e.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
             k.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
             b.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+
+            e.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+            b.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+            k.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+            skoleResource.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+            skoleResource.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
+            skoleResource.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
         });
 
     }

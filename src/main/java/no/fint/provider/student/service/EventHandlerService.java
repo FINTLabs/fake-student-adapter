@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * The EventHandlerService receives the <code>event</code> from SSE endpoint (provider) in the {@link #handleEvent(Event)} method.
+ * The EventHandlerService receives the <code>event</code> from SSE endpoint (provider) in the {@link #handleEvent(String, Event)} method.
  */
 @Slf4j
 @Service
@@ -41,36 +41,11 @@ public class EventHandlerService {
 
     private Map<String, Handler> actionsHandlerMap;
 
-    /**
-     * <p>
-     * HandleEvent is responsible of handling the <code>event</code>. This is what should be done:
-     * </p>
-     * <ol>
-     * <li>Verify that the adapter can handle the <code>event</code>. This is done in the {@link EventStatusService#verifyEvent(Event)} method</li>
-     * <li>Call the code to handle the action</li>
-     * <li>Posting back the handled <code>event</code>. This done in the {@link EventResponseService#postResponse(Event)} method</li>
-     * </ol>
-     * <p>
-     * This is where you implement your code for handling the <code>event</code>. It is typically done by making a onEvent method:
-     * </p>
-     * <pre>
-     *     {@code
-     *     public void onGetAllDogs(Event<FintResource> dogAllEvent) {
-     *
-     *         // Call a service to get all dogs from the application and add the result to the event data
-     *         // dogAllEvent.addData(dogResource);
-     *
-     *     }
-     *     }
-     * </pre>
-     *
-     * @param event The <code>event</code> received from the provider
-     */
-    public void handleEvent(Event event) {
+    public void handleEvent(String component, Event event) {
         if (event.isHealthCheck()) {
-            postHealthCheckResponse(event);
+            postHealthCheckResponse(component, event);
         } else {
-            if (eventStatusService.verifyEvent(event).getStatus() == Status.ADAPTER_ACCEPTED) {
+            if (eventStatusService.verifyEvent(component, event).getStatus() == Status.ADAPTER_ACCEPTED) {
                 String action = event.getAction();
                 Event<FintLinks> responseEvent = new Event<>(event);
 
@@ -85,19 +60,14 @@ public class EventHandlerService {
                     responseEvent.setResponseStatus(ResponseStatus.ERROR);
                     responseEvent.setMessage(ExceptionUtils.getStackTrace(e));
                 } finally {
-                    eventResponseService.postResponse(responseEvent);
+                    eventResponseService.postResponse(component, responseEvent);
                 }
 
             }
         }
     }
 
-    /**
-     * Checks if the application is healthy and updates the event object.
-     *
-     * @param event The event object
-     */
-    public void postHealthCheckResponse(Event event) {
+    public void postHealthCheckResponse(String component, Event event) {
         Event<Health> healthCheckEvent = new Event<>(event);
         healthCheckEvent.setStatus(Status.TEMP_UPSTREAM_QUEUE);
 
@@ -108,7 +78,7 @@ public class EventHandlerService {
             healthCheckEvent.setMessage("The adapter is unable to communicate with the application.");
         }
 
-        eventResponseService.postResponse(healthCheckEvent);
+        eventResponseService.postResponse(component, healthCheckEvent);
     }
 
     /**

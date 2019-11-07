@@ -1,19 +1,19 @@
 server:
- port: 8091
+  port: 8091
 
 springfox:
- title: '@title@'
- version: '@version@'
+  title: '@title@'
+  version: '@version@'
 
-base-url: https://play-with-fint.felleskomponent.no/utdanning/elev/provider
 fint:
- adapter:
-  organizations: fake.no
-  sse-endpoint: ${base-url}/sse/%s
-  status-endpoint: ${base-url}/status
-  response-endpoint: ${base-url}/response
+  adapter:
+    organizations: fake.no
+    endpoints:
+      sse: /sse/%s
+      status: /status
+      response: /response
 
- oauth:
-  enabled: false
-  access-token-uri: https://idp.felleskomponent.no/nidp/oauth/nam/token
-  scope: fint-client
+  oauth:
+    enabled: false
+    access-token-uri: https://idp.felleskomponent.no/nidp/oauth/nam/token
+    scope: fint-client

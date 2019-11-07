@@ -14,15 +14,16 @@ import org.glassfish.jersey.media.sse.InboundEvent;
 public class FintEventListener extends AbstractEventListener {
 
     private EventHandlerService eventHandler;
+    private String component;
 
-    public FintEventListener(EventHandlerService eventHandler) {
+    public FintEventListener(String component, EventHandlerService eventHandler) {
         this.eventHandler = eventHandler;
+        this.component = component;
     }
 
     @Override
     public void onEvent(Event event) {
-        log.info("Processing event: {}", event);
-        log.trace("Event data: {}", event.getData());
-        eventHandler.handleEvent(event);
+        log.info("{}: Processing event {} for {} - {}", component, event.getAction(), event.getOrgId(), event.getCorrId());
+        eventHandler.handleEvent(component, event);
     }
 }

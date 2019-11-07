@@ -40,7 +40,7 @@ public class BasisgruppeRepository implements Handler {
     private FakeData fakeData;
 
     @PostConstruct
-    public void init() throws IOException {
+    public void init() {
         repository.addAll(fakeData.getBasisgrupper());
         log.info("Repository contains {} items.", repository.size());
     }
@@ -54,14 +54,12 @@ public class BasisgruppeRepository implements Handler {
     public void accept(Event<FintLinks> response) {
         log.debug("Handling {} ...", response);
         log.trace("Event data: {}", response.getData());
-        switch (ElevActions.valueOf(response.getAction())) {
-            case GET_ALL_BASISGRUPPE:
-                response.setData(new ArrayList<>(repository));
-                break;
-            default:
-                response.setStatus(Status.ADAPTER_REJECTED);
-                response.setResponseStatus(ResponseStatus.REJECTED);
-                response.setMessage("Invalid action");
+        if (ElevActions.valueOf(response.getAction()) == ElevActions.GET_ALL_BASISGRUPPE) {
+            response.setData(new ArrayList<>(repository));
+        } else {
+            response.setStatus(Status.ADAPTER_REJECTED);
+            response.setResponseStatus(ResponseStatus.REJECTED);
+            response.setMessage("Invalid action");
         }
     }
 

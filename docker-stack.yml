@@ -1,6 +1,0 @@
-version: "3"
-services:
-  adapter:
-    image: dtr.fintlabs.no/beta/fake-student-adapter
-    environment:
-      SPRING_PROFILES_ACTIVE: fintlabs
