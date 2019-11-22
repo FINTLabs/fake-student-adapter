@@ -10,8 +10,11 @@ import no.fint.model.resource.utdanning.elev.BasisgruppeResource;
 import no.fint.model.resource.utdanning.elev.ElevResource;
 import no.fint.model.resource.utdanning.elev.ElevforholdResource;
 import no.fint.model.resource.utdanning.elev.KontaktlarergruppeResource;
+import no.fint.model.resource.utdanning.timeplan.FagResource;
+import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
 import no.fint.model.utdanning.utdanningsprogram.Skole;
+import no.fint.provider.student.service.GrepService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -36,10 +39,13 @@ public class FakeData {
     @Value("${fint.adapter.fake.groups:10}")
     private int antallGrupper;
 
+    @Value("${fint.adapter.fake.subjects:3}")
+    private int antallFag;
+
     @Value("${fint.adapter.organizations}")
     private String orgId;
 
-    private String[] programmer = { "BA", "DH", "EL", "HS", "ID", "KD", "MD", "ME", "MK", "NA", "PB", "RM", "SS", "ST", "TP" };
+    private String[] programmer = {"BA", "DH", "EL", "HS", "ID", "KD", "MD", "ME", "MK", "NA", "PB", "RM", "SS", "ST", "TP"};
 
     @Getter
     private List<PersonResource> personer;
@@ -59,11 +65,22 @@ public class FakeData {
     @Getter
     private List<SkoleResource> skoler;
 
+    @Getter
+    private List<FagResource> fag;
+
+    @Getter
+    private List<UndervisningsgruppeResource> undervisningsgrupper;
+
     @Autowired
     private PersonGenerator personGenerator;
 
+    @Autowired
+    private GrepService grepService;
+
     @PostConstruct
     public void init() {
+        fag = grepService.getFag();
+
         ThreadLocalRandom random = ThreadLocalRandom.current();
 
         skoler = new ArrayList<>(1);
@@ -106,8 +123,8 @@ public class FakeData {
         personer.stream().map(PersonResource::getNavn).map(PersonGenerator::getPersonnavnAsString).forEach(System.out::println);
 
         Periode periode = new Periode();
-        periode.setStart(Date.from(LocalDate.of(2019,8,20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
-        periode.setSlutt(Date.from(LocalDate.of(2020,6,21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setStart(Date.from(LocalDate.of(2019, 8, 20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setSlutt(Date.from(LocalDate.of(2020, 6, 21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
         periode.setBeskrivelse("2019-2020");
 
         basisgrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
@@ -128,6 +145,18 @@ public class FakeData {
             return r;
         }).collect(Collectors.toList());
 
+        undervisningsgrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
+            FagResource f = sample(fag, random);
+            UndervisningsgruppeResource r = new UndervisningsgruppeResource();
+            r.setNavn(String.format("%s-%d", f.getNavn(), i));
+            r.setBeskrivelse(f.getBeskrivelse());
+            r.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
+            r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
+            skoleResource.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
+            f.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+            return r;
+        }).collect(Collectors.toList());
+
         elevforhold.forEach(e -> {
             BasisgruppeResource b = sample(basisgrupper, random);
             KontaktlarergruppeResource k = sample(kontaktlarergrupper, random);
@@ -142,6 +171,12 @@ public class FakeData {
             skoleResource.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
             skoleResource.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
             skoleResource.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
+
+            IntStream.rangeClosed(1, antallFag).forEach(i -> {
+                UndervisningsgruppeResource u = sample(undervisningsgrupper, random);
+                u.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+                e.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
+            });
         });
 
     }
@@ -154,7 +189,7 @@ public class FakeData {
         int div = programmer.length;
         int mod = id % div;
         int p = id / div;
-        return String.format("%d%s%s", trinn, programmer[mod], (char)('A' + p));
+        return String.format("%d%s%s", trinn, programmer[mod], (char) ('A' + p));
     }
 
     private static <T> T sample(List<T> collection, ThreadLocalRandom random) {
