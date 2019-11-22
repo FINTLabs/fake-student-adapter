@@ -9,13 +9,15 @@ import no.fint.model.utdanning.elev.Basisgruppe
 import no.fint.model.utdanning.elev.Elev
 import no.fint.model.utdanning.elev.Elevforhold
 import no.fint.model.utdanning.elev.Kontaktlarergruppe
+import no.fint.provider.student.service.GrepService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.web.client.RestTemplate
 import spock.lang.Specification
 
 import java.util.concurrent.ThreadLocalRandom
 
-@SpringBootTest(classes = [FakeData, PersonGenerator, Navn, Adresser])
+@SpringBootTest(classes = [FakeData, PersonGenerator, Navn, Adresser, GrepService, RestTemplate])
 class FakeDataSpec extends Specification {
     @Autowired
     FakeData fakeData
