@@ -181,6 +181,8 @@ public class FakeData {
             IntStream.rangeClosed(1, antallFag).forEach(i -> {
                 UndervisningsgruppeResource u = sample(undervisningsgrupper, random);
                 u.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+                u.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                skoleResource.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
                 e.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
             });
         });
