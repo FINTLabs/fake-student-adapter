@@ -45,6 +45,9 @@ public class FakeData {
     @Value("${fint.adapter.organizations}")
     private String orgId;
 
+    @Value("${fint.adapter.fake.year:2019}")
+    private int skoleaar;
+
     private String[] programmer = {"BA", "DH", "EL", "HS", "ID", "KD", "MD", "ME", "MK", "NA", "PB", "RM", "SS", "ST", "TP"};
 
     @Getter
@@ -123,9 +126,11 @@ public class FakeData {
         personer.stream().map(PersonResource::getNavn).map(PersonGenerator::getPersonnavnAsString).forEach(System.out::println);
 
         Periode periode = new Periode();
-        periode.setStart(Date.from(LocalDate.of(2019, 8, 20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
-        periode.setSlutt(Date.from(LocalDate.of(2020, 6, 21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
-        periode.setBeskrivelse("2019-2020");
+        periode.setStart(Date.from(LocalDate.of(skoleaar, 8, 20).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setSlutt(Date.from(LocalDate.of(skoleaar + 1, 6, 21).atStartOfDay(ZoneId.of("UTC")).toInstant()));
+        periode.setBeskrivelse(String.format("%d-%d", skoleaar, skoleaar + 1));
+
+        fag.forEach(r -> r.setPeriode(Collections.singletonList(periode)));
 
         basisgrupper = IntStream.rangeClosed(1, antallGrupper).mapToObj(i -> {
             BasisgruppeResource r = new BasisgruppeResource();
@@ -150,6 +155,7 @@ public class FakeData {
             UndervisningsgruppeResource r = new UndervisningsgruppeResource();
             r.setNavn(String.format("%s-%d", f.getNavn(), i));
             r.setBeskrivelse(f.getBeskrivelse());
+            r.setPeriode(Collections.singletonList(periode));
             r.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
             r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
             skoleResource.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));

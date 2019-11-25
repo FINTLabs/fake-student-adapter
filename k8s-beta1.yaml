@@ -55,6 +55,8 @@ spec:
               value: https://beta.felleskomponent.no/utdanning/elev/provider
             - name: fint.adapter.endpoints.providers.utdanningsprogram
               value: https://beta.felleskomponent.no/utdanning/utdanningsprogram/provider
+            - name: fint.adapter.endpoints.providers.timeplan
+              value: https://beta.felleskomponent.no/utdanning/timeplan/provider
             - name: fint.oauth.enabled
               value: "true"
             - name: fint.oauth.request-url
