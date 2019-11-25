@@ -158,8 +158,10 @@ public class FakeData {
             r.setPeriode(Collections.singletonList(periode));
             r.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
             r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
-            skoleResource.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
-            f.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+            if (f.getSkole().isEmpty()) {
+                f.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                skoleResource.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
+            }
             return r;
         }).collect(Collectors.toList());
 
@@ -171,18 +173,26 @@ public class FakeData {
             k.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
             b.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
 
-            e.addSkole(Link.with(Skole.class, "skolenummer", "42"));
-            b.addSkole(Link.with(Skole.class, "skolenummer", "42"));
-            k.addSkole(Link.with(Skole.class, "skolenummer", "42"));
-            skoleResource.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
-            skoleResource.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
-            skoleResource.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
+            if (e.getSkole().isEmpty()) {
+                e.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                skoleResource.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
+            }
+            if (b.getSkole().isEmpty()) {
+                b.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                skoleResource.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
+            }
+            if (k.getSkole().isEmpty()) {
+                k.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                skoleResource.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
+            }
 
             IntStream.rangeClosed(1, antallFag).forEach(i -> {
                 UndervisningsgruppeResource u = sample(undervisningsgrupper, random);
                 u.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
-                u.addSkole(Link.with(Skole.class, "skolenummer", "42"));
-                skoleResource.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
+                if (u.getSkole().isEmpty()) {
+                    u.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                    skoleResource.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
+                }
                 e.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
             });
         });
