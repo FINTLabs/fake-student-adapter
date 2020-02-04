@@ -20,7 +20,7 @@ spec:
       restartPolicy: Always
       containers:
         - name: adapter-fake-student
-          image: fintlabs.azurecr.io/fake-student-adapter:1.0.2
+          image: fintlabs.azurecr.io/fake-student-adapter:1.0.3
           resources:
             limits:
               memory: "2Gi"
