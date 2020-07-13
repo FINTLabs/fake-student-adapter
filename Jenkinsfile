@@ -12,18 +12,18 @@ pipeline {
         stage('Publish master') {
             when { branch 'master' }
             steps {
-                sh "docker tag ${GIT_COMMIT} fintlabs.azurecr.io/fake-student-adapter:build.${BUILD_NUMBER}"
-                withDockerRegistry([credentialsId: 'fintlabs.azurecr.io', url: 'https://fintlabs.azurecr.io']) {
-                    sh "docker push fintlabs.azurecr.io/fake-student-adapter:build.${BUILD_NUMBER}"
+                sh "docker tag ${GIT_COMMIT} fintlabsacr.azurecr.io/fake-student-adapter:build.${BUILD_NUMBER}"
+                withDockerRegistry([credentialsId: 'fintlabsacr.azurecr.io', url: 'https://fintlabsacr.azurecr.io']) {
+                    sh "docker push fintlabsacr.azurecr.io/fake-student-adapter:build.${BUILD_NUMBER}"
                 }
             }
         }
         stage('Publish PR') {
             when { changeRequest() }
             steps {
-                sh "docker tag ${GIT_COMMIT} fintlabs.azurecr.io/fake-student-adapter:${BRANCH_NAME}.${BUILD_NUMBER}"
-                withDockerRegistry([credentialsId: 'fintlabs.azurecr.io', url: 'https://fintlabs.azurecr.io']) {
-                    sh "docker push fintlabs.azurecr.io/fake-student-adapter:${BRANCH_NAME}.${BUILD_NUMBER}"
+                sh "docker tag ${GIT_COMMIT} fintlabsacr.azurecr.io/fake-student-adapter:${BRANCH_NAME}.${BUILD_NUMBER}"
+                withDockerRegistry([credentialsId: 'fintlabsacr.azurecr.io', url: 'https://fintlabsacr.azurecr.io']) {
+                    sh "docker push fintlabsacr.azurecr.io/fake-student-adapter:${BRANCH_NAME}.${BUILD_NUMBER}"
                 }
             }
         }
@@ -35,9 +35,9 @@ pipeline {
                 script {
                     VERSION = TAG_NAME[1..-1]
                 }
-                sh "docker tag ${GIT_COMMIT} fintlabs.azurecr.io/fake-student-adapter:${VERSION}"
-                withDockerRegistry([credentialsId: 'fintlabs.azurecr.io', url: 'https://fintlabs.azurecr.io']) {
-                    sh "docker push fintlabs.azurecr.io/fake-student-adapter:${VERSION}"
+                sh "docker tag ${GIT_COMMIT} fintlabsacr.azurecr.io/fake-student-adapter:${VERSION}"
+                withDockerRegistry([credentialsId: 'fintlabsacr.azurecr.io', url: 'https://fintlabsacr.azurecr.io']) {
+                    sh "docker push fintlabsacr.azurecr.io/fake-student-adapter:${VERSION}"
                 }
             }
         }
