@@ -1,14 +1,24 @@
 {
-  "systemId": {
-    "identifikatorverdi": "ABCD213"
-  },
   "feidenavn": {
     "identifikatorverdi": "gudrun.haraldseid@sundetvgs.haugfk.no"
+  },
+  "systemId": {
+    "identifikatorverdi": "ABCD213"
   },
   "_links": {
     "personalressurs": [
       {
-        "href": "${administrasjon.personal.personalressurs}/ansattnummer/12345"
+        "href": "${administrasjon.personal.personalressurs}/ansattnummer/100003"
+      }
+    ],
+    "undervisningsforhold": [
+      {
+        "href": "${utdanning.elev.undervisningsforhold}/systemid/L_100003_1"
+      }
+    ],
+    "skole": [
+      {
+        "href": "${utdanning.utdanningsprogram.skole}/skolenummer/123456"
       }
     ]
   }
