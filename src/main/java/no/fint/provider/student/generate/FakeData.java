@@ -13,6 +13,7 @@ import no.fint.model.resource.utdanning.elev.KontaktlarergruppeResource;
 import no.fint.model.resource.utdanning.timeplan.FagResource;
 import no.fint.model.resource.utdanning.timeplan.UndervisningsgruppeResource;
 import no.fint.model.resource.utdanning.utdanningsprogram.SkoleResource;
+import no.fint.model.utdanning.kodeverk.Skoleeiertype;
 import no.fint.model.utdanning.utdanningsprogram.Skole;
 import no.fint.provider.student.service.GrepService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,18 +90,23 @@ public class FakeData {
         skoler = new ArrayList<>(1);
         SkoleResource skoleResource = new SkoleResource();
 
-        skoleResource.setSkolenummer(personGenerator.identifikator("42"));
-        skoleResource.setSystemId(personGenerator.identifikator("42"));
-        skoleResource.setNavn("Jalla videregående skole");
-        skoleResource.setOrganisasjonsnummer(personGenerator.identifikator("999999999"));
+        skoleResource.setSkolenummer(personGenerator.identifikator("123456"));
+        skoleResource.setSystemId(personGenerator.identifikator("XX1234"));
+        skoleResource.setOrganisasjonsnavn("Sundet videregående skole");
+        skoleResource.setJuridiskNavn("Sundet videregående skole");
+        skoleResource.setNavn("Sundet VGS");
+        skoleResource.setOrganisasjonsnummer(personGenerator.identifikator("970123458"));
+        skoleResource.addOrganisasjon(Link.with("${administrasjon.organisasjon.organisasjonselement}/organisasjonsnummer/970123458"));
+        skoleResource.addSkoleeierType(Link.with(Skoleeiertype.class, "systemid", "1"));
         skoler.add(skoleResource);
 
         personer = new ArrayList<>(antallElever);
         elever = new ArrayList<>(antallElever);
         elevforhold = new ArrayList<>(antallElever);
+        int year = LocalDate.now().minusYears(18).getYear();
         for (int i = 0; i < antallElever; i++) {
             String systemid = Integer.toString(50000 + i);
-            PersonResource personResource = personGenerator.generatePerson();
+            PersonResource personResource = personGenerator.generatePerson(year, year + 2);
             personResource.addElev(Link.with(ElevResource.class, "systemid", systemid));
 
             ElevResource elevResource = new ElevResource();
@@ -159,7 +165,7 @@ public class FakeData {
             r.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
             r.setSystemId(personGenerator.identifikator(Integer.toString(1000 + i)));
             if (f.getSkole().isEmpty()) {
-                f.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                f.addSkole(Link.with(Skole.class, "skolenummer", "123456"));
                 skoleResource.addFag(Link.with(FagResource.class, "systemid", f.getSystemId().getIdentifikatorverdi()));
             }
             return r;
@@ -174,15 +180,15 @@ public class FakeData {
             b.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
 
             if (e.getSkole().isEmpty()) {
-                e.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                e.addSkole(Link.with(Skole.class, "skolenummer", "123456"));
                 skoleResource.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
             }
             if (b.getSkole().isEmpty()) {
-                b.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                b.addSkole(Link.with(Skole.class, "skolenummer", "123456"));
                 skoleResource.addBasisgruppe(Link.with(b.getClass(), "systemid", b.getSystemId().getIdentifikatorverdi()));
             }
             if (k.getSkole().isEmpty()) {
-                k.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                k.addSkole(Link.with(Skole.class, "skolenummer", "123456"));
                 skoleResource.addKontaktlarergruppe(Link.with(k.getClass(), "systemid", k.getSystemId().getIdentifikatorverdi()));
             }
 
@@ -190,7 +196,7 @@ public class FakeData {
                 UndervisningsgruppeResource u = sample(undervisningsgrupper, random);
                 u.addElevforhold(Link.with(e.getClass(), "systemid", e.getSystemId().getIdentifikatorverdi()));
                 if (u.getSkole().isEmpty()) {
-                    u.addSkole(Link.with(Skole.class, "skolenummer", "42"));
+                    u.addSkole(Link.with(Skole.class, "skolenummer", "123456"));
                     skoleResource.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
                 }
                 e.addUndervisningsgruppe(Link.with(u.getClass(), "systemid", u.getSystemId().getIdentifikatorverdi()));
