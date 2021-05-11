@@ -33,7 +33,8 @@ public class EventResponseService {
      */
     public void postResponse(String component, Event event) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add(HeaderConstants.ORG_ID, event.getOrgId());
+        headers.set(HeaderConstants.ORG_ID, event.getOrgId());
+        headers.set(HeaderConstants.CLIENT, event.getClient());
         String url = endpoints.getProviders().get(component) + endpoints.getResponse();
         log.info("{}: Posting response for {} ...", component, event.getAction());
         ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(event, headers), Void.class);

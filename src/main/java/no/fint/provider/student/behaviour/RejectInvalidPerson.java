@@ -14,7 +14,7 @@ import static java.util.Objects.isNull;
 public class RejectInvalidPerson implements Behaviour<PersonResource> {
     @Override
     public void accept(Event event, PersonResource person) {
-        if (person.getFodselsnummer()==null||person.getFodselsnummer().getIdentifikatorverdi()==null) {
+        if (person.getFodselsnummer() == null || person.getFodselsnummer().getIdentifikatorverdi() == null) {
             addProblem(event, "fodselsnummer", "Mangler fødselsnummer");
         }
         if (isNull(person.getNavn())) {
@@ -30,7 +30,7 @@ public class RejectInvalidPerson implements Behaviour<PersonResource> {
         if (isNull(person.getFodselsdato())) {
             addProblem(event, "fodselsdato", "Mangler fødselsdato");
         }
-        if (!event.getProblems().isEmpty()) {
+        if (!empty(event.getProblems())) {
             log.info("Rejecting {}", event);
             event.setResponseStatus(ResponseStatus.REJECTED);
             event.setMessage("Incomplete object.");

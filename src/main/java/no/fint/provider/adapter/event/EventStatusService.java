@@ -62,7 +62,8 @@ public class EventStatusService {
     public void postStatus(String component, Event event) {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.add(HeaderConstants.ORG_ID, event.getOrgId());
+            headers.set(HeaderConstants.ORG_ID, event.getOrgId());
+            headers.set(HeaderConstants.CLIENT, event.getClient());
             String url = endpoints.getProviders().get(component) + endpoints.getStatus();
             ResponseEntity<Void> response = restTemplate.exchange(url, HttpMethod.POST, new HttpEntity<>(event, headers), Void.class);
             log.info("{}: Provider POST status response: {}", component, response.getStatusCode());

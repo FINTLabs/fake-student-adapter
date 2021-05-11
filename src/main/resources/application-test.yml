@@ -5,9 +5,14 @@ security:
 fint:
  adapter:
   organizations: mock.no
-  sse-endpoint: http://localhost:8081/provider/sse/%s
-  status-endpoint: http://localhost:8081/provider/status
-  response-endpoint: http://localhost:8081/provider/response
-
+  endpoints:
+   providers:
+    elev: http://localhost:8081/provider
+  fake:
+   students: 20000
+   groups: 2000
  oauth:
   enabled: false
+
+server:
+ port: 8092

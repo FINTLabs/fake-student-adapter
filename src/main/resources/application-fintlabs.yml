@@ -7,8 +7,8 @@ fint:
     organizations: fake.fintlabs.no
     endpoints:
       providers:
-        elev: https://beta.felleskomponent.no/utdanning/elev/provider
-        utdanningsprogram: https://beta.felleskomponent.no/utdanning/utdanningsprogram/provider
+        elev: https://alpha.felleskomponent.no/utdanning/elev/provider
+        # utdanningsprogram: https://beta.felleskomponent.no/utdanning/utdanningsprogram/provider
     fake:
       students: 2000
       groups: 200
